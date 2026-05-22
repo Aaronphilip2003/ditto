@@ -1,9 +1,21 @@
+use std::env;
 use walkdir::WalkDir;
+
 fn main() {
-    let path = "/Users/aaron/Downloads";
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() < 2 {
+        eprintln!("Usage: ditto <path>");
+        return;
+    }
+
+    let path = &args[1];
 
     for entry in WalkDir::new(path) {
         let entry = entry.unwrap();
-        println!("{}",entry.path().display());
+
+        if entry.file_type().is_file() {
+            println!("{}", entry.path().display());
+        }
     }
 }
