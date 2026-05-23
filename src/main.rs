@@ -1,24 +1,24 @@
+use clap::Parser;
 use hex::encode;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
-use std::env;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
+#[derive(Parser)]
+struct Cli {
+    path: String,
+    #[arg(long)]
+    dry_run: bool,
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
     let mut file_collection: HashMap<String, Vec<PathBuf>> = HashMap::new();
+    let cli = Cli::parse();
 
-    if args.len() < 2 {
-        eprintln!("Usage: ditto <path>");
-        return;
-    }
-
-    let path = &args[1];
-
-    for entry in WalkDir::new(path) {
+    for entry in WalkDir::new(&cli.path) {
         let entry = entry.unwrap();
 
         if entry.file_type().is_file() {
